@@ -266,7 +266,8 @@ public class LexicalScanner {
 		}
 		return String.valueOf(keyword).equals("var");
 	}
-
+	//not needed
+/*
 	public boolean isPrint(){
 		int length=5;
 		char[] keyword = new char[length];
@@ -276,7 +277,7 @@ public class LexicalScanner {
 		}
 		return String.valueOf(keyword).equals("print");
 	}
-
+*/
 	public void addToken(){
 		this.getTokenList().add(getNext());
 	}
