@@ -61,7 +61,7 @@ public class Parser {
 		this.expectToken(TokenCode.eProgend);
 		this.expectToken(TokenCode.eSemicolon);
 	}
-	//const is allready used within java
+	//const is already used within java
 	private void const(){
 		
 	}
