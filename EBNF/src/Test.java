@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+
 public class Test {
 
 	/**
@@ -5,9 +7,8 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String path = "pleaseFillIn";
-		LexicalScanner lx = new LexicalScanner();
-		lx.readFile(path);
-		lx.print();
+		Parser pa = new Parser();
+		pa.setFile("C:/doc.txt");
+		pa.analyseFile();
 	}
 }
