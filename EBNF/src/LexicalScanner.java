@@ -8,12 +8,20 @@ public class LexicalScanner {
 	private ArrayList<Token> tokenList = new ArrayList<Token>();
 	private int column, line, pos;
 	private String text;
-	private boolean eof;
+	private boolean eof=false;
 	
 	private void print(){
 		for(Token t:tokenList){
 			System.out.println(t.toString());
 		}
+	}
+	
+		//as long as the end of the file is not reached, keep on reading in tokens
+		while(!eof){
+			this.addToken();
+			this.print();
+		}
+		
 	}
 	
 	private char getChar(){
@@ -36,8 +44,7 @@ public class LexicalScanner {
 			this.nextChar();
 		}
 	}
-	private void readNumber(Token t){
-		char c = getChar();
+	private void readNumber(Token t, char c){
 		int holdpos = pos;
 		while((!eof) && (Character.isDigit(c))){
 			this.nextChar();
@@ -47,8 +54,7 @@ public class LexicalScanner {
 		t.setText(text.substring(holdpos, pos));
 		t.setCode(TokenCode.eNumber);
 	}
-	private void readName(Token t){
-		char c = getChar();
+	private void readName(Token t, char c){
 		int holdpos = pos;
 		//there has to be a letter on the first position --> semantic rules
 		//this first letter is defined in the class getNext()
@@ -60,10 +66,9 @@ public class LexicalScanner {
 		t.setText(text.substring(holdpos, pos));
 		t.setCode(TokenCode.eName);
 	}
-	private void readOperatorDelimiter(Token t){
-		char c = getChar();
+	private void readOperatorDelimiter(Token t, char c){
 		int holdpos = pos;
-		//cast the caracter to ascii for special operators 
+		//cast the character to ASCII for special operators 
 		int myAscii = (int) c;
 		
 		if(c=='+'){
@@ -87,13 +92,13 @@ public class LexicalScanner {
 		}else{
 			//there is only mod left
 			t.setCode(TokenCode.eMod);
-			pos = pos+3;
+			pos = pos+2;
 		}
+		this.nextChar();
 		//does it really work(with the arguments "pos,pos")?!
 		t.setText(text.substring(holdpos, pos));
 	}
-	private void handleKeyword(Token t, int index){
-		char c = getChar();
+	private void handleKeyword(Token t, int index, char c){
 		int holdpos = pos;
 		
 		while((!eof) && (Character.isLetter(c))){
@@ -133,48 +138,50 @@ public class LexicalScanner {
 	}
 	
 	public Token getNext(){
-		skipWhiteSpace();
+		this.skipWhiteSpace();
 		column++;
 		char c = this.getChar();
-		Token t = new Token(line, column);
-		if(isOperatorDelimiter()){
-			this.readOperatorDelimiter(t);
+		Token t = new Token(column, line);
+		if(this.isOperatorDelimiter(c)){
+			this.readOperatorDelimiter(t,c);
 		}
 		else if(Character.isLetter(c)){
 			if(c=='p'){
-				if(isProgstart()){
-					this.handleKeyword(t, 0);
+				if(this.isProgstart()){
+					this.handleKeyword(t, 0,c);
 				}
-				else if(isProgend()){
-					this.handleKeyword(t, 1);
+				else if(this.isProgend()){
+					this.handleKeyword(t, 1,c);
 				}
-				else if(isPrint()){
-					this.handleKeyword(t, 4);
+				else if(this.isPrint()){
+					this.handleKeyword(t, 4,c);
 				}
 			}
 			else if(c=='c'){
-				if(isConst()){
-					this.handleKeyword(t, 2);
+				if(this.isConst()){
+					this.handleKeyword(t, 2,c);
 				}
 			}
 			else if(c=='v'){
-				if(isVar()){
-					this.handleKeyword(t, 3);
+				if(this.isVar()){
+					this.handleKeyword(t, 3,c);
 				}
 			}
-			this.readName(t);
+			this.readName(t,c);
 		}
 		else if(Character.isDigit(c)){
-			this.readNumber(t);
-		}else{
-			t.setCode(TokenCode.eError);
-			t.setText(text.substring(pos, pos));
+			this.readNumber(t,c);
 		}
+		/*else{
+			t.setCode(TokenCode.eError);
+			t.setText(text.substring(pos, (pos+1)));
+			this.nextChar();
+		}
+		*/
 		return t;
 	}
 	
-	public boolean isOperatorDelimiter(){
-		char c=getChar();
+	public boolean isOperatorDelimiter(char c){
 		if((c=='+')||(c=='-')||(c=='*')||(c=='/')||(c=='=')
 				||(c==';')||(c=='{')||(c=='}')||(c=='(')||(c==')')
 				||(c=='"')){
@@ -182,11 +189,11 @@ public class LexicalScanner {
 		}
 		//now comes 'mod'(modulo)
 		else if(c=='m'){
-			nextChar();
-			c=getChar();
+			this.nextChar();
+			c=this.getChar();
 			if(c=='o'){
-				nextChar();
-				c=getChar();
+				this.nextChar();
+				c=this.getChar();
 				 if(c=='d'){
 					return true;
 				}
@@ -205,34 +212,13 @@ public class LexicalScanner {
 			return false;
 		}
 	}
-	/*public boolean isKeyword(){
-		 if(c=='m'){
-			nextChar();
-			c=getChar();
-			if(c=='o'){
-				nextChar();
-				c=getChar();
-				 if(c=='d'){
-					return true;
-				}
-				 else{
-					 return false;
-				 }
-			}
-			else{
-				return false;
-			}
-		}
-		else{
-			return false;
-	}*/
-		 
+
 	public boolean isProgstart(){
 		int length=9;
 		char[] keyword = new char[length];
 		for(int i =0;i<length;i++){
-			keyword[i]=getChar();
-			nextChar();
+			keyword[i]=this.getChar();
+			this.nextChar();
 		}
 		return String.valueOf(keyword).equals("progstart");
 	}
@@ -241,8 +227,8 @@ public class LexicalScanner {
 		int length=7;
 		char[] keyword = new char[length];
 		for(int i =0;i<length;i++){
-			keyword[i]=getChar();
-			nextChar();
+			keyword[i]=this.getChar();
+			this.nextChar();
 		}
 		return String.valueOf(keyword).equals("progend");
 	}
@@ -251,8 +237,8 @@ public class LexicalScanner {
 		int length=5;
 		char[] keyword = new char[length];
 		for(int i =0;i<length;i++){
-			keyword[i]=getChar();
-			nextChar();
+			keyword[i]=this.getChar();
+			this.nextChar();
 		}
 		return String.valueOf(keyword).equals("const");
 	}
@@ -261,33 +247,31 @@ public class LexicalScanner {
 		int length=3;
 		char[] keyword = new char[length];
 		for(int i =0;i<length;i++){
-			keyword[i]=getChar();
-			nextChar();
+			keyword[i]=this.getChar();
+			this.nextChar();
 		}
 		return String.valueOf(keyword).equals("var");
 	}
-	//not needed
-/*
+
 	public boolean isPrint(){
 		int length=5;
 		char[] keyword = new char[length];
 		for(int i =0;i<length;i++){
-			keyword[i]=getChar();
-			nextChar();
+			keyword[i]=this.getChar();
+			this.nextChar();
 		}
 		return String.valueOf(keyword).equals("print");
 	}
-*/
+
 	public void addToken(){
-		this.getTokenList().add(getNext());
+		this.getTokenList().add(this.getNext());
 	}
 	
 	public ArrayList<Token> getTokenList() {
-		return tokenList;
+		return this.tokenList;
 	}
 	
 	public String getTokenInformation(Token t){
 		return t.toString();
 	}
-	
 }
