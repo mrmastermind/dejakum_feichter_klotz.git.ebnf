@@ -1,4 +1,3 @@
-
 public class Test {
 
 	/**
@@ -7,7 +6,8 @@ public class Test {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		LexicalScanner lx = new LexicalScanner();
-		//something's missing there
+		String path = "";
+		lx.readFile(path);
 	}
 
 }
