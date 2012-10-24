@@ -17,6 +17,7 @@ public class Parser {
 	//Splits the text up into tokens
 	public void analyseFile(){
 		sc.addToken();
+		//there is a loop missing, that goes through the whole amount of tokens
 	}
 	
 	//Shows error message
@@ -46,60 +47,15 @@ public class Parser {
 	}	
 	
 	private void start(){
-		this.expectToken(TokenCode.eProgstart);
-		this.expectToken(TokenCode.eName);
-		this.expectToken(TokenCode.eSemicolon);
+		expectToken(TokenCode.eProgstart);
+		expectToken(TokenCode.eName);
+		expectToken(TokenCode.eSemicolon);
 		while(){
-			this.const();
+			acceptToken(TokenCode.eConst);
 		}
 		while(){
-			this.var();
+		acceptToken(TokenCode.eVar);
 		}
-		this.expectToken(TokenCode.eCurlyBracket);
-		this.statments();
-		this.expectToken(TokenCode.eCurlyBracket);
-		this.expectToken(TokenCode.eProgend);
-		this.expectToken(TokenCode.eSemicolon);
+		expectToken(TokenCode.eCurlyBracket);
 	}
-	//const is allready used within java
-	private void const(){
-		
-	}
-	private void var(){
-		
-	}
-	private void statments(){
-		
-	}
-	private void statment(){
-	
-	}
-	private void funcCall(){
-		
-	}
-	private void assignment(){
-		
-	}
-	private void expression(){
-		
-	}
-	private void faktor(){
-		
-	}
-	private void term(){
-		
-	}
-	private void name(){
-			
-	}
-	private void number(){
-		
-	}
-	private void digit(){
-		
-	}
-	private void letter(){
-		
-	}
-	
 }
