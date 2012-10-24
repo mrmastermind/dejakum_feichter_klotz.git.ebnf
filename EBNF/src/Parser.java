@@ -40,7 +40,7 @@ public class Parser {
 		t = sc.getNext();
 		return temp;
 	}
-	//test
+	
 	private void NONTerminal(){
 		
 	}	
